@@ -16,12 +16,12 @@ f.close()
 
 external_ip = get('https://api.ipify.org').text
 
-gmail_user = 'transaction.failed.0@gmail.com'  
-gmail_password = 'excel4t1t'
+gmail_user = 'PLACEHOLDER'
+gmail_password = 'PLACEHOLDER'
 
-sent_from = gmail_user  
-to = gmail_user  
-subject = 'Update #%s' % number  
+sent_from = gmail_user
+to = gmail_user
+subject = 'Update #%s' % number
 process_list = []
 connection_list = []
 
@@ -149,7 +149,7 @@ def netstat():
     for line in content:
         line_array = _remove_empty(line.split(' '))     # Split lines and remove empty spaces.
         l_host,l_port = _convert_ip_port(line_array[1]) # Convert ipaddress and port from hex to decimal.
-        r_host,r_port = _convert_ip_port(line_array[2]) 
+        r_host,r_port = _convert_ip_port(line_array[2])
         tcp_id = line_array[0]
         state = STATE[line_array[3]]
         uid = pwd.getpwuid(int(line_array[7]))[0]       # Get user from UID.
@@ -194,9 +194,9 @@ except:
   body = external_ip+"\n"+"".join(process_list)+"\n"+str(connection_list)
 
 
-email_text = """\  
-From: %s  
-To: %s  
+email_text = """\
+From: %s
+To: %s
 Subject: %s
 
 %s
