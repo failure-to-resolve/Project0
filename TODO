@@ -1,0 +1,33 @@
+Client Commands available:
+  Shell: full mod
+  Tree: full mod
+  Update: full mod
+  Isup: Mostly done, ip module is done, not tested
+  User [passwords/webcam/screenshot/process]: full mods
+  Die: full mod
+  Network [time] [interface]: full mod
+  Fuckyou: full mod
+  Imbroke: full mod
+  Delete [filepath]: full mod
+  Touch [filepath]: full mod
+  Disable [keyboard/mouse/display]: full mods
+  Enable [keyboard/mouse/display]: full mods
+  Hidden Payload: full main
+  Testing Payload: full main
+
+Server commands:
+  Refresh: full mod
+  Killall: easy, but still needs to be done
+  Showme: hard, full mod
+  RIP: last
+  Ncurses ui: full mod
+  Main: full mod
+
+Proxy commands:
+  Setdown: full mod
+  Setup: full mod
+  Change: full mod
+  Main: need to implement the main runner
+
+For all modules:
+  Persistence, error checking, missing dependency problems, os detection

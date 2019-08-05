@@ -1,6 +1,6 @@
 #! /usr/bin/python2
 
-a = open("testfile" ,"rb").read().strip()
+a = open("test" ,"rb").read().strip()
 
 
 #Takes a single string, without newlines and uses a homebrewed encryption(Simple Xor), to prepare the string for network travel

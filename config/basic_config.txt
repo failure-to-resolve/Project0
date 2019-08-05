@@ -1,0 +1,5 @@
+clientuser="transaction.failed.0@gmail.com"
+clientpass="excel4t1t"
+serveruser="transaction.failed.0@gmail.com"
+serverpass="excel4t1t"
+modulesnum=1
