@@ -20,7 +20,8 @@ Server commands:
   Killall: easy, but still needs to be done
   Showme: hard, full mod
   RIP: last
-  Ncurses ui: full mod
+  Ncurses ui: full mod //changed to full gui using pysimplegui
+  gui: In progress
   Main: full mod
 
 Proxy commands:

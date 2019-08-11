@@ -1,2 +1,11 @@
 os
 sys
+threading
+PySimpleGUI
+base64
+easyimap
+re
+glob
+pwd
+itertools
+smtplib
