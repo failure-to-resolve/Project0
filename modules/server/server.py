@@ -74,13 +74,13 @@ def main(ServerName): #main window layout for managing clients
   menu_def = [['&File',['Edit Modules','Edit ProxyList',]],
             ['&Edit', ['Config', ['Proxy', 'Module', ]]],
             ['&Help', '&About']]
-  layout = [[sg.Menu(menu_def, tearoff=True)],
-    [sg.Combo(["Create Payload", "Launch Payload", "Open shell", "Check Status of Clients", "Check Status of ProxyChains"],size=(100,10),enable_events=True,readonly=True),sg.Listbox(values=(accounts.values()), size=(50, 20))],
+  layout = [[sg.Menu(menu_def, tearoff=True)],[sg.Text("Account to send from:", size=(138,1), justification="right")],
+    [sg.Combo(["Create Payload", "Launch Payload", "Open shell", "Check Status of Clients", "Check Status of ProxyChains"],size=(100,10),enable_events=False,readonly=True),sg.Listbox(values=(accounts.values()), size=(50, 20))],
 #    [sg.Radio("Command String", "Create your own command to send", default=True, size=(30,2)),sg.Radio("Activate Module", "Use a predifined module on client", default=True, size=(30,2))],
     [sg.Button("Execute", size=(20,2),button_color=["red","black"])],
-    [sg.Text("Notes")],
+    [sg.Text("Notes", size=(120,2)),sg.Text("Target Client", size=(15,2))],
     [sg.Multiline(autoscroll=True,size=(100,10),do_not_clear=True),sg.Listbox(values=(clients.values()), size=(50, 10))],
-    [sg.Button("Save", tooltip='Click to save notes for client',button_color=["black","white"]),sg.Button('Add Client',button_color=["black","white"]),sg.Button('Add Module',button_color=["black","white"]), sg.Button('Add Account',button_color=["black","white"]), sg.Button("Clear",button_color=["black","white"])]]
+    [sg.Button("Save", tooltip='Click to save notes for client',button_color=["black","white"]),sg.Button('Add Client',button_color=["black","white"]),sg.Button('Add Module',button_color=["black","white"]), sg.Button('Add Account',button_color=["black","white"]), sg.Button("Clear",button_color=["black","white"]), sg.Button('Exit',button_color=["black","red"])]]
   window = sg.Window(ServerName, layout)
   while True:
     event, values = window.Read()
@@ -96,7 +96,7 @@ def main(ServerName): #main window layout for managing clients
       addModule()
     elif event == "About":
       help = open(currentDir + "/../../README.md", "r").read()
-      
+      sg.PopupScrolled(help)
     else:
       print(event, values)
 
