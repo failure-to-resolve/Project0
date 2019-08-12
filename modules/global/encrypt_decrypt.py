@@ -4,7 +4,7 @@ a = open("test" ,"rb").read().strip()
 
 
 #Takes a single string, without newlines and uses a homebrewed encryption(Simple Xor), to prepare the string for network travel
-def processOutData(inString,sequenceNum):
+def encrypt(inString,sequenceNum):
   interim = []
   output = []
   inputArray = list(inString)
@@ -18,7 +18,7 @@ def processOutData(inString,sequenceNum):
   return ''.join(output[::-1])
 
 #reverses the above encryption
-def processInData(inString):
+def decrypt(inString):
   sequenceNum = inString.split('S')[0]
   print sequenceNum
   interimArray = []

