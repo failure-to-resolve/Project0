@@ -17,8 +17,8 @@ Client Commands available:
 Server (GUI):
     findModules: check a marked directory for compatible modules (.run initiative)
     dynamic gui: change layout based on what the user has currently selected
-    parseWindow: add all available events to it, intigrate into dynamic flow
-    createConfig: checkbox style, choose your own account, client, proxychain, initial commands
+    parseWindow: add all available events to it, integrate into dynamic flow
+    createConfig: checkbox style, choose your own account, client, proxychains, initial commands
     launchPaylaod: fairly simple, parsing the client side is a little more difficult
     createPayload: to be decided
     status: need to get dynamic ui working(to make it pretty), otherwise, needs the client to be written
