@@ -16,7 +16,7 @@ from requests import get
 #/\ overkill, just use a regex, then check if hosts are live with a checkup
 from Crypto.PublicKey import RSA
 from Crypto import Random
-
+import base64
 
 
 external_ip = get('https://api.ipify.org').text
