@@ -19,13 +19,13 @@ def encrypt(inString,sequenceNum):
 
 #reverses the above encryption
 def decrypt(inString):
-  sequenceNum = inString.split('S')[0]
-  print sequenceNum
-  interimArray = []
-  formattedArray = inString.split('S').pop(1).split('X')
-  del formattedArray[-1]
-  for eachAscii in formattedArray:
-     interimArray.append(chr(int(eachAscii)^int(sequenceNum)))
-  return ''.join(interimArray[::-1])[1:]
+sequenceNum = inString.split('S')[0]
+print sequenceNum
+interimArray = []
+formattedArray = inString.split('S').pop(1).split('X')
+del formattedArray[-1]
+for eachAscii in formattedArray:
+interimArray.append(chr(int(eachAscii)^int(sequenceNum)))
+return ''.join(interimArray[::-1])[1:]
 
 

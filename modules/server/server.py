@@ -1,7 +1,7 @@
 #! /usr/bin/python2
 
 import PySimpleGUI27 as sg
-#import threading as th #may cause problems
+import threading as th #may cause problems, but will be needed to check emails at the same time as
 import time #timing the checkup so that a client isnt flooded with checkups
 import sys
 import os
@@ -11,6 +11,13 @@ import pwd
 import itertools
 import smtplib
 from requests import get
+#from email.utils import parseaddr
+#from validate_email import validate_email #The above has been replaced with this
+#/\ overkill, just use a regex, then check if hosts are live with a checkup
+from Crypto.PublicKey import RSA
+from Crypto import Random
+
+
 
 external_ip = get('https://api.ipify.org').text
 
@@ -171,6 +178,11 @@ def fullCheckup(): #module used to essentially "ping" the client to check if it 
   pass
 def singleCheckup(): #check whether a single client is alive
   pass
+def fullAccount():
+  for each_account in accounts:
+    mailSender(each_account[1],server_username,server_password, "IsLive?",'','')
+  
+  pass
 def singleAccount(accountName, accountPass): #Checks whether the account being sent to is alive or dead, by sending a "ping" from the account back to the server recieving account
   mailSender(test_account_name, accountName, accountPass, "Test",'','')
   pass
@@ -206,8 +218,11 @@ def addAccount(): #add email account to the "Available" section
     pass
 def readAll(): #read all emails within an account
   pass
-def processEmail(accountDetails): #logs in to account, makes sure the address is valid, if not red out in the select account list
-  
+def processEmail(accountUser): #makes sure the address is valid, if not red out in the select account list
+  if not re.match("[^@]+@[^@]+\.[^@]+",accountUser):
+    return "Invalid"
+  else:
+    return "Valid"
   pass
 
 def openFileBox():
@@ -238,10 +253,49 @@ Subject: %s
 
   server.login(seUser, sePass)
   server.sendmail(seUser, reUser, email_text)
-def mailChecker(accountName, accountPass, serverName): #returns all recent emails received by the account from the main server
+def reMailChecker(accountName, accountPass, serverName): #returns all recent emails received by the account from the main server
+  pass
+
+def encrypt(inString,sequenceNum):
+  interim = []
+  output = []
+  inputArray = list(inString)
+  inputArray.insert(0,str(len(inString)))
+  for eachChar in inputArray:
+    interim.append((ord(eachChar)))
+  for eachAscii in interim:
+    output.append(str(eachAscii^sequenceNum)+'X')
+    print eachAscii^sequenceNum
+  output.append(str(sequenceNum)+'S')
+  return ''.join(output[::-1])
+
+def decrypt(inString):
+  sequenceNum = inString.split('S')[0]
+  print sequenceNum
+  interimArray = []
+  formattedArray = inString.split('S').pop(1).split('X')
+  del formattedArray[-1]
+  for eachAscii in formattedArray:
+     interimArray.append(chr(int(eachAscii)^int(sequenceNum)))
+  return ''.join(interimArray[::-1])[1:]
+
+def encode(filepath):
+  file = open(filepath, "rb").read()
+  encoded = base64.b64encode(file)
+  return encoded
+
+def decode(filepath):
+   file = open(filepath, "rb").read()
+   decoded = base64.b64decode(file)
+   return decoded
+
+def newKeys(): #send out the new public key(s) to every live host, any updates using old keys will be lost, unless we
+  #use a backup of the keys to a file every time the server closes, on a crash they would be lost
   pass
 
 
-main(startup())
+print accounts
+#print processEmail('transaction.failed.0@gmail.com')
+#main(startup())
 #addAccount()
 #openFileBox()
