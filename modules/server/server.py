@@ -11,9 +11,6 @@ import pwd
 import itertools
 import smtplib
 from requests import get
-#from email.utils import parseaddr
-#from validate_email import validate_email #The above has been replaced with this
-#/\ overkill, just use a regex, then check if hosts are live with a checkup
 from Crypto.PublicKey import RSA
 from Crypto import Random
 import base64
@@ -291,14 +288,22 @@ def decode(filepath):
    decoded = base64.b64decode(file)
    return decoded
 def createKey():
+  random_generator = Random.new().read
+  key = RSA.generate(1024, random_generator)
+  return key.export()
   pass
-def storeKey(): #store a single key into a user selected file
+def storeKey(key, path): #store a single key into a user selected file, key must be text, not an object
+  f = open(path, "w+")
+  f.write(key)
   pass
-def storeAllKeys(): #store every key for every client into a user selected file
+def storeAllKeys(keyList, path): #store every key for every client into a user selected file, keyList[0] is the client number, keylist[1] is the key
+  f = open(path, "a")
+  for key in keyList:
+    f.write(keyList[0] + ":::" + keyList[1])
   pass
-def revertKey(): #revert to another key for the selected client
+def revertKey(clientNum, keyList, oldKeyList): #revert to another key for the selected client
   pass
-def revertAllKeys(): #revert from a full backup in case you fucked up and generated new keys
+def revertAllKeys(keyList, oldKeyList): #revert from a full backup in case you fucked up and generated new keys
   pass
 def newKeys(): #send out the new public key(s) to every live host, any updates using old keys will be lost, unless we
   #use a backup of the keys to a file every time the server closes, on a crash they would be lost

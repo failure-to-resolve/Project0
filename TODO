@@ -31,7 +31,7 @@ Server (GUI):
     proxies: need to set up a good forwarding mechanism in client, needs client
     addClient/account: set up integration with file on disk
     reMailChecker: needs a specified format to be parsed, need to create the command/update format
-    keyInfrastructure: need to be stored on disk, needs client to send/recieve keys
+    keyInfrastructure: needs to be tested, key sending is the other issue...
 
 Proxy commands:
   Setdown: full mod
