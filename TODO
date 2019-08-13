@@ -2,7 +2,6 @@ Client Commands available:
   Shell: full mod
   Tree: full mod
   Update: full mod
-  Isup: Mostly done, ip module is done, not tested
   User [passwords/webcam/screenshot/process]: full mods
   Die: full mod
   Network [time] [interface]: full mod
@@ -15,14 +14,24 @@ Client Commands available:
   Hidden Payload: full main
   Testing Payload: full main
 
-Server commands:
-  Refresh: full mod
-  Killall: easy, but still needs to be done
-  Showme: hard, full mod
-  RIP: last
-  Ncurses ui: full mod //changed to full gui using pysimplegui
-  gui: In progress
-  Main: full mod
+Server (GUI):
+    findModules: check a marked directory for compatible modules (.run initiative)
+    dynamic gui: change layout based on what the user has currently selected
+    parseWindow: add all available events to it, intigrate into dynamic flow
+    createConfig: checkbox style, choose your own account, client, proxychain, initial commands
+    launchPaylaod: fairly simple, parsing the client side is a little more difficult
+    createPayload: to be decided
+    status: need to get dynamic ui working(to make it pretty), otherwise, needs the client to be written
+    fullCheckup: needs client
+    singleCheckup: see above
+    fullAccount: needs mailChecker as well as a mail parser
+    singleAccount: see above
+    readUpdate: need to set a format for the updates, also needs client
+    modules: needs an editors integration, but otherwise do-able
+    proxies: need to set up a good forwarding mechanism in client, needs client
+    addClient/account: set up integration with file on disk
+    reMailChecker: needs a specified format to be parsed, need to create the command/update format
+    keyInfrastructure: need to be stored on disk, needs client to send/recieve keys
 
 Proxy commands:
   Setdown: full mod

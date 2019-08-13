@@ -48,6 +48,8 @@ def populateClients():
     clients[counter].append("unknown")
     counter = counter + 1
   return clients
+def findModules(): #populate a list of modules available to the server
+  pass
 
 accounts = populateAccounts()
 clients = populateClients()
@@ -298,14 +300,30 @@ def revertKey(): #revert to another key for the selected client
   pass
 def revertAllKeys(): #revert from a full backup in case you fucked up and generated new keys
   pass
-
-
 def newKeys(): #send out the new public key(s) to every live host, any updates using old keys will be lost, unless we
   #use a backup of the keys to a file every time the server closes, on a crash they would be lost
   pass
+def getIPs(): #returns a tuple, The users current external IP followed by the internal
+  raw_ips = []
+
+  raw_ips.append(get('https://api.ipify.org').text)
+  data = os.popen("ip addr").readlines()
+  for ip in data:
+    if ip[:9] == "    inet " and ip[9:12] != "127":
+      raw_ip = ip[9:]
+      break
+  raw_ip = raw_ip.split(' ')
+  raw_ip = raw_ip[0]
+  raw_ips.append(raw_ip[:len(raw_ip)-3])
+
+  ips = []
+
+  for ip in raw_ips:
+    ips.append(ip.encode('ascii', 'ignore'))
+  return ips
 
 
-print accounts
+print getIPs()
 #print processEmail('transaction.failed.0@gmail.com')
 #main(startup())
 #addAccount()
