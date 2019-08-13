@@ -326,9 +326,17 @@ def getIPs(): #returns a tuple, The users current external IP followed by the in
   for ip in raw_ips:
     ips.append(ip.encode('ascii', 'ignore'))
   return ips
+def formatCommand(clientID, command, updateNum): #all variables passed to the function must be strings
+  commandLen=str(len(command))
+  while len(clientID)<4:
+    clientID= "0" + clientID
+  while len(updateNum) < 5:
+    updateNum = "0" + updateNum
+  return clientID + commandLen + updateNum + command
 
 
-print getIPs()
+#print formatCommand("12", "asdADSEAAAAAAaaaaaaAAAAAAAAAA((*()(*(*&o#", "1233")
+#print getIPs()
 #print processEmail('transaction.failed.0@gmail.com')
 #main(startup())
 #addAccount()

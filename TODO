@@ -1,3 +1,12 @@
+Format for communication:
+####$$$$!!!!!"..."
+#:Client number
+$:Length of command string
+!:Update number
+"...":Command
+Client must respond with "OK!!!!!!"
+where ! is the update number sent by the server
+
 Client Commands available:
   Shell: full mod
   Tree: full mod
