@@ -288,6 +288,17 @@ def decode(filepath):
    file = open(filepath, "rb").read()
    decoded = base64.b64decode(file)
    return decoded
+def createKey():
+  pass
+def storeKey(): #store a single key into a user selected file
+  pass
+def storeAllKeys(): #store every key for every client into a user selected file
+  pass
+def revertKey(): #revert to another key for the selected client
+  pass
+def revertAllKeys(): #revert from a full backup in case you fucked up and generated new keys
+  pass
+
 
 def newKeys(): #send out the new public key(s) to every live host, any updates using old keys will be lost, unless we
   #use a backup of the keys to a file every time the server closes, on a crash they would be lost
