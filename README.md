@@ -1,61 +1,33 @@
-+------+  +--------------+
-|Server|->|Command Server|--------+
-+------+  +--------------+        |
-   |                              |
-   ----------------------------+  |
-                               |  V
-+------+                    +----------+
-|Client|<------------------>|Mail Server|
-+------+                    +-----------+
+PROJECT0:
 
-1. Server is started(monitors and updates display with data read from email)
-2. Client is deployed(executable, ELF, apk, etc.)
-3. Client requests initial config file(base64 encoded)
-4. Client requests additional modules
-5. Repeat from 2
+The worlds first email based command and control server
 
-All commands must be prepended with a number:
-  Example: #1234 Network 60
-
-Client Commands available:
-  Shell: Opens local shell on client computer
-  Tree: Show full directory tree on host
-  Update: Allows the server to send a new configuration file, configuration file must be in the body of the message, base64 encoded
-  Isup: Sends a reply to server with the public and private ip addresses
-  User [passwords/webcam/screenshot/process]: Grab passwords,take picture through webcam, take screenshot, get process list
-  Die: Deletes the clients code and removes all traces from host pc
-  Network [time] [interface]: capture traffic on the specified interface for [time] number of seconds
-  Fuckyou: Encrypt everything on the host, no decryption phrase available
-  Imbroke: Encrypt everything BUT send the decryption phrase back to the server, Display a "Gentle Persuasion" page on host with input box
-  Delete [filepath]: Delete file from host pc
-  Touch [filepath]: Place the attached file into the specified directory
-  Disable [keyboard/mouse/display]: Makes the specified device unavailable#EXTREMELY EXPERIMENTAL, USE AT OWN RISK
-  Enable [keyboard/mouse/display]: Makes the unavailable device usable again #EXTREMELY EXPERIMENTAL, USE AT OWN RISK
-
-Server commands:
-  Refresh: Send Isup to all clients
-  Killall: Sends Die to all clients
-  Showme: Display most recent screenshot of specified host
-  RIP: Do not use unless you are compromised, irreversibly encrypts everything, on every host, on every server, on every proxy. This is a last resort
+Features:
+Utilizing subject lines to pass encrypted commands to an already set payload
+Modular payload that can accept and deploy new functions quickly
+Edit your own modules to be sent straight to the payload, get real time feedback on whether they worked and the status
+A multi-threaded server capable of handling multiple clients in a handy GUI
+Turn your payloads into email proxies (may implement a small smtp/imap server into each payload for forwarding, see smtpd in python docs)
+Multi-platform, planned to work on everything that can run python code, and since it's modular you can pick and choose what to enumerate with
+Self deleting payloads: Are you compromised? Have you finished your testing? these payloads will take care of everything for a clean getaway...I mean clean report.
 
 
-Alternatively:
+How does it work?
+1. The client is deployed on the target machine
+2. The server is started and populated with many email accounts(must be gmail for now, with imap enabled)
+3. You get to pick and choose how you want your client to behave with different modules
+4. Send the completed payload using the *fragmented command strings sent in the subject line of emails
+5. The client parses the subject lines of the fragmented subject lines and then executes the selected function accordingly, anything from creating a listening
+port to deploying a meterpreter payload from a hidden location in an attached image
 
-+------+  +--------------+
-|Server|->|Command Server|--------+
-+------+  +--------------+        V
-   |                         +-----+            +-----+
-   +------------------------>|Proxy|<---------->|Proxy|
-                             +-----+            +-----+
-                                                   |
-+------+                    +-----------+          |
-|Client|<------------------>|Mail Server|<---------+
-+------+                    +-----------+
+*fragmented: command strings are first encoded with base64, then split into chunks, then encrypted using RSA 1024 public key encryption. This is then sent to the client using multiple emails and then reconstructed on the target machine
 
-Proxy commands:
-  Setdown: set the senders email address
-  Setup: set the receivers email address
-  Change: Change the proxy email account
-**OR**
-  SetChain: Creates a chain configuration file
-  AddLink: Adds a sender/reciever to the chain file, must include full username and password, encoded before transmit
+Best part is, since the email AND attachments are read directly into memory and can be acted upon accordingly, the follow-up payloads are COMPLETELY FILELESS
+
+
+PS. I'm currently a student trying to make my way through college, so any support you can give me (from tips of the trade to straight up bitcoin) is absolutely appreciated.
+
+Hope you enjoy my first tool. Enjoy!
+
+Email:transaction.failed.0@gmail.com
+BC: bc1qjcnmr0n6c711cn3emmf4h3wxjqawq5suz4yu6z
