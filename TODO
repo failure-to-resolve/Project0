@@ -27,7 +27,7 @@ Client Commands available:
 
 Client(payload sent initially):
   send email: just need to pull code from the server
-  recieve email: need to get attachment parsing working, otherwise the subject and from headers work great, the body sucks tho
+  receive email: need to get attachment parsing working, otherwise the subject and from headers work great, the body sucks tho
   activate module: needs to be started (lol)
   hide data: might do a C library to handle this, slack space is tricky to work with
   retrieve data: see above
@@ -37,7 +37,7 @@ Server (GUI):
     dynamic gui: change layout based on what the user has currently selected
     parseWindow: add all available events to it, integrate into dynamic flow
     createConfig: checkbox style, choose your own account, client, proxychains, initial commands
-    launchPaylaod: fairly simple, parsing the client side is a little more difficult
+    launchPayload: fairly simple, parsing the client side is a little more difficult
     createPayload: to be decided
     status: need to get dynamic ui working(to make it pretty), otherwise, needs the client to be written
     fullCheckup: needs client

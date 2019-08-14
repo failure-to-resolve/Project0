@@ -1,7 +1,5 @@
 PROJECT0:
 
-The worlds first email based command and control server
-
 Features:
 Utilizing subject lines to pass encrypted commands to an already set payload
 !!!Modular payload that can accept and deploy new functions quickly
