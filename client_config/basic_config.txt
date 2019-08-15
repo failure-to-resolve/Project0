@@ -1,5 +1,0 @@
-clientuser="PLACEHOLDER"
-clientpass="PLACEHOLDER"
-serveruser="PLACEHOLDER"
-serverpass="PLACEHOLDER"
-modulesnum=1
