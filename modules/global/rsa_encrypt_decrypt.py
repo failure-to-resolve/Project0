@@ -9,7 +9,7 @@ dir = os.getcwd()
 
 
 def getRandom():
-  return Random.rew().read
+  return Random.new().read
 
 def generateKey():
   return RSA.generate(1024,getRandom())
@@ -27,8 +27,8 @@ def getKeys(privatePath, publicPath):
 
   key = generateKey()
 
-  pub.write(key.publicKey().exportKey('PEM'))
-  pri.write(key.exportKey('PEM'))
+  pub.write(key.publickey().export_key('PEM'))
+  pri.write(key.export_key('PEM'))
 
   pub.close()
   pri.close()

